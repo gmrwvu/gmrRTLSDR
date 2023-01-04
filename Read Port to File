@@ -1,0 +1,28 @@
+# Import socket module 
+import socket                
+
+
+  
+# Create a socket object 
+s = socket.socket()          
+  
+# Define the port on which you want to connect 
+port = 30003
+
+# connect to the server on local computer 
+s.connect(('127.0.0.1', port)) 
+
+# Open file
+filename = "adbs_data_new.txt"
+myfile = open(filename, 'w')
+ 
+# receive data from the server
+try: 
+  while(1):
+    rowIn = s.recv(2048)
+    myfile.write(rowIn)
+except KeyboardInterrupt:
+   s.close()
+   myfile.close()
+   print "readPort_to_File is signing off"
+
