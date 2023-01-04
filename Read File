@@ -1,0 +1,15 @@
+
+# Open file
+filename = "adbs_data.txt"
+myfile = open(filename, 'r')
+ 
+# receive data from the server
+line = myfile.readline()
+while line:
+  print line
+  print "++++++++++++++++++++++++++++"
+  line = myfile.readline()
+  
+# close the connection 
+myfile.close()
+
