@@ -1,0 +1,49 @@
+0	msgType		      Text		  All types
+1	TxType		      Integer		All types
+2	SessionID	      Integer		All types
+3	unK		          Integer
+4	AircraftID	    Text		  All types
+5	Hexident	      Integer		All types
+6	DateGen		      Text		  All types
+7	TimeGen		      Text		  All types
+8	DateLog		      Text		  All types
+9	TimeLog		      Text		  All types
+10	FlightID	    Text		  Type 1
+	(CallSign)
+11	Altitude	    Integer		Type 3, 5
+12	GroundSpeed	  Integer		Type 4
+13	Track		      Integer		Type 4
+14	Latitude	    Text		  Type 3
+15	Longitude	    Text		  Type 3
+16	VerticleRate	Integer	  Type 4
+17	Squawk		    Text		
+18	Alert		      Text	
+19	Emergency	    Text
+20	SPI		        Text
+21	onGround	    Text		  Type 4
+
+create table ADBS	
+(
+msgType text,
+txType Integer,
+sessionID Integer,
+unK Integer,
+AircraftID Text,
+Hexident Integer,
+DateGen	Text,
+TimeGen Text,
+DateLog	Text,
+TimeLog Text,
+FlightID Text,
+Altitude Integer,
+GroundSpeed Integer,
+Track Integer,
+Latitude Text,
+Longitude Text,
+VerticleRate Integer,	
+Squawk Text,
+Alert Text,
+Emergency Text,
+SPI Text,
+onGround Text
+);
