@@ -1,0 +1,2 @@
+dump1090.exe --interactive --oversample --net --phase-enhance  --net-ro-port 30002 --net-beast --device-index 1 --aggressive --fix   --debug D
+pause
