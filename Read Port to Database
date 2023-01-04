@@ -1,0 +1,34 @@
+# Import database library              
+import sqlite3 as lite
+import sys
+
+# Open database connection
+con = None
+con = lite.connect('ATC.db')
+cur = con.cursor()
+
+# Open data file
+filename = "adbs_data.txt"
+myfile = open(filename, 'r')
+line = myfile.readline()
+
+# receive data from the server 
+while(line):
+  fl = line.split(",")
+  if fl[11]=='': fl[11] = 'null'
+  if fl[12]=='': fl[12] = 'null'
+  if fl[13]=='': fl[13] = 'null'
+  if fl[16]=='': fl[16] = 'null'
+  myStmt = "insert into flights values('" 
+  myStmt = myStmt + fl[0] + "'," +  fl[1] + "," +  fl[2] + "," + fl[3] + ",'" +  fl[4] 
+  myStmt = myStmt + "'," +  fl[5] + ",'" +  fl[6] + "','" +  fl[7] + "','" +  fl[8] + "','" +  fl[9] + "','" 
+  myStmt = myStmt +  fl[10] + "'," +  fl[11] + "," +  fl[12] + "," +  fl[13] + ",'" +  fl[14] + "','" 
+  myStmt = myStmt +  fl[15] + "'," +  fl[16] + ",'" +  fl[17] + "','" +  fl[18] + "','" +  fl[19] + "','" 
+  myStmt = myStmt +  fl[20] + "','" +  fl[21][0] + "');"
+  cur.execute(myStmt)
+  line = myfile.readline()
+  
+# close the connection 
+con.commit()
+con.close()
+myfile.close()
