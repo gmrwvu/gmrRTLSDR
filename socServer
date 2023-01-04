@@ -1,0 +1,98 @@
+import socket
+import os
+from thread import *
+import json
+import Queue
+import time
+
+
+serversocket = socket.socket()
+serversocket.bind(('127.0.0.1', 8079))
+serversocket.listen(10)
+
+allAircraft = Queue.Queue()
+
+def clientthread(connection, winNum):
+  global allAircraft
+  #print "IN THREAD"
+  while 1:
+        try:
+            #print "in new while"
+            lenRecv1 = connection.recv(1024)
+            if lenRecv1 == "0":
+               break
+            #print lenRecv1
+            try:
+                lenRecv = int(lenRecv1)
+                connection.send('Y')
+                data = connection.recv(lenRecv)
+            except:
+                connection.send('N')
+                print("bad length ", lenRecv1)
+                #print list(allAircraft.queue)
+                continue 
+            #print "first client msg ", lenRecv1
+            airList = json.loads(data)
+            #NEED TO TAKE THIS OUT WHEN MULTIPLE THREADS ARE USING THE QUEUE
+            with allAircraft.mutex:
+              allAircraft.queue.clear()
+            #BELOW STATYS IN BUT MODIFY TO ONLY ADD LISYT ELELEMNTS IF NOT IN QUEUE
+            for plane in airList:
+              allAircraft.put_nowait(plane)
+            #print "QUEUE length is ", len(list(allAircraft.queue))
+
+        except socket.error, e:
+            print "socket error, ", e
+  print "leaving thread"
+  connection.close()
+  
+def prettyPrint(airList):
+     os.system('cls')
+     for i in range(len(airList)):
+            print '%10s' % airList[i]['hexident'],
+            if 'callsign' in airList[i]:
+              print '%10s' % airList[i]['callsign'],
+            else:
+              print '          ',
+            if 'velocity' in airList[i]:
+                gmrLen = len(airList[i]['velocity']) 
+                print '%10s' % airList[i]['velocity'][gmrLen - 1]['speed'],
+            else:
+                print '          ',
+            if 'altitude' in airList[i]:
+                  gmrLen = len(airList[i]['altitude']) 
+                  print '%10s' % airList[i]['altitude'][gmrLen - 1]['alt'],
+            else:
+              print '          ',
+            if 'position' in airList[i]:
+                  gmrLen = len(airList[i]['position']) 
+                  print '%20s' % airList[i]['position'][gmrLen - 1]['lat'], airList[i]['position'][gmrLen - 1]['long'],
+            else:
+              print '                    ',
+              
+            print 
+
+def printThread():
+    global allAircraft
+    while 1:
+      if allAircraft.empty():
+        print "empty queue"
+      else:
+        #print list(allAircraft.queue)
+        prettyPrint(list(allAircraft.queue))
+      time.sleep(5)
+
+if __name__ == '__main__':
+    start_new_thread(printThread, ())
+    while 1:
+        try:
+            print("Starting socket accept ")
+            connection, address = serversocket.accept()
+            gmrIP = address[0]
+            a,b,c,d = gmrIP.split('.')
+            print("Connection from ", gmrIP , d)
+            start_new_thread(clientthread, (connection,d,))
+            print "after start thread"
+        except:
+            print("Lost socket")
+    serversocket.close()
