@@ -1,0 +1,138 @@
+#as of 2/7/23 the db only has downlink format 17 and 18
+#should I further filter out all except TC 9 to 22
+#should be no dups there
+#this filter is in adsb.flt
+#and still get dups - many of them - evne w/out replay attack
+#so cosine sim is a good choice
+
+
+ select icao, count(*)
+   from adsb
+   group by icao;
+
+ select data, count(*) as cnt
+   from adsb
+   group by data
+   having cnt > 1;
+
+GET ALL THE DATA BLOCK DUPS, HERE THE DUPS MAY HAVE SAME ICAO
+PROBLEM IS GETTING SAME ICAO AS WELL AS DIFFERENT ICAO
+create table dups as
+select data, count(*) as cnt
+   from adsb
+   group by data
+   having cnt > 1;
+
+GET DISTRIBUTION OF DATA BLOCK DUPS
+select cnt, count(*)
+   from dups
+   group by cnt;
+
+PUT ICAO AND DATA BLOCK ONLY OF DATA BLOCKS THAT ARE DUPS
+INTO A TABLE FOR EASIER ANALYSIS
+create table adsb_dup as 
+select ICAO, adsb.data
+from adsb, dups
+where adsb.data = dups.data;
+
+TO GET SAME UNIQUE DATA-ICAO COMBINATIONS
+select data, icao, count(*) as cnt
+from adsb_dup
+group by data, ICAO;
+TOO MANY TO MANUALLY REVIEW
+
+THIS DOES NOT WORK RIGHT
+NEED TO COLLAESCE FIELDS WITH - BETWEEN THEM
+DO DISTINCT ON THE COALSED
+PUT THAT UNIQE SET OF VALUES IN DATA_DUP
+BUT SEPRATE THEM FIRST
+TO GET same data with differnt ICAO, CREATE TABLE WITH ABOCVE 
+TO MAKE FOR EASIER ANALYSIS0
+create table data_dups as
+select data, icao, count(*) as cnt
+from adsb_dup
+group by data, ICAO;
+
+TO FIND OUT IF THE SAME DATA BLOCK HAS DIFFERENT ICAOS SO CANNOT RELY ON JUST A SINGLE LOOKUP MATCH
+select data, count(*)
+from data_dups
+group by data
+having count(*) > 1;
+
+THERE ARE DIFFERENT ICAOS FOR A GIVEN DATA BLIOCK
+FOR EXAMPLE
+select * from data_dups where data = '99915D8E78808A';
+sqlite> select * from data_dups
+   ...> where data = '99917E8158708B';
+data            icao    cnt
+--------------  ------  ---
+99917E8158708B  A5ECB7  1
+99917E8158708B  ABC7C6  1
+
+AND
+
+sqlite> select * from data_dups
+   ...> where data = '990D739810049B';
+data            icao    cnt
+--------------  ------  ---
+990D739810049B  A4D7E4  14
+990D739810049B  A752EA  3
+990D739810049B  AC6445  1
+990D739810049B  AC91D4  1
+990D739810049B  AD10EC  1
+990D739810049B  AD237F  15
+
+select * from data_dups where data = '99216680584C8C';
+
+
+TO GET HIGHEST COUNT IN THIS DATA
+select data, count(*)
+from data_dups
+group by data
+having count(*) > 4;
+
+GET DISRTRIBUTION OF DUPS
+MAKE TABLE FOR EASIER QUERIES
+create table ICAO_dup_dist as
+select data, count(*) as cnt
+from data_dups
+group by data
+having count(*) > 1;
+
+TO GET DIST OF ICAO DUPS
+select cnt, count(*)
+from ICAO_dup_dist
+group by cnt;
+
+TO GET THE ICAOS THAT HAVE SAME DATA BLOCK AS ANOTHER ICAO
+select ICAO from ICAO_dup_dist i, adsb a
+where i.data = a.data;
+
+PUT IN TABLE FOR EASIER QUERY
+create table ICAO_dups as
+select ICAO from ICAO_dup_dist i, adsb a
+where i.data = a.data;
+
+TO GET COUNT OF ICAOS WITH DUPS
+select count(distinct ICAO) from ICAO_dups;
+
+TO GET COUNT OF TOTAL ICAOs
+select count( distinct ICAO) from adsb;
+=================================
+
+select distinct count(icao)
+ from adsb;
+
+select count(distinct icao) from adsb;
+
+#get numerous icao's for this duplicate
+#raw data is 8DA144BBF83300060049B82D0803
+#pms.typecode("8DA144BBF83300060049B82D0803") is 31 - other uses
+#tc 31 is also operational status
+#but only in version 1 not v 0
+#in v2, redined structure of tc 31
+#https://mode-s.org/decode/content/ads-b/1-basics.html
+select * from adsb where data = 'F83300060049B8';
+
+#also get tc = 29 with many dups
+#eg 8DA7ACD6EA57F85ED95C08F5AA93
