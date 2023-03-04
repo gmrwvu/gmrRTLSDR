@@ -1,0 +1,20 @@
+CREATE TABLE adsb (
+   adsb_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   dfcap text NOT NULL,
+   icao text NOT NULL,
+   msg text NOT NULL,
+   crc text NOT NULL,
+   raw text NOT NULL
+);
+
+CREATE INDEX adsb_data 
+ON adsb(msg);
+
+ select icao, count(*)
+   from adsb
+   group by icao;
+
+ select data, count(*)
+   from adsb
+   group by data;
+

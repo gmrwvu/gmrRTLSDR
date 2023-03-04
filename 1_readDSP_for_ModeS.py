@@ -1,0 +1,40 @@
+# Import socket module 
+import socket
+import time
+from time import ctime
+import json
+
+  
+# Create a socket object 
+#s = socket.socket()
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  
+# Define the port on which you want to connect 
+#port = 30003
+port = 30002
+
+# connect to the server on local computer 
+s.connect(('127.0.0.1', port)) 
+
+# Open file
+filename = "adbs_data_new.txt"
+myfile = open(filename, 'w')
+airList = []
+airList.append({"last_contact": "time.time()","hexident":"fl[4]", "timeStart":"fl[7]", "callsign":"fl[10]", "altitude":[{"alt":"f[11]","time":"ctime()"}], "velocity":[{"speed":"f[12]","time":"ctime()"}], "position":[{"lat":"f[14]","long":"fl[15]","time":"ctime()"}]})
+
+# receive data from the server
+try: 
+  while(1):
+    rowIn = s.recv(2048)
+    print rowIn
+    myfile.write(rowIn)
+    #fl = rowIn.split("MSG,")
+    #del fl[len(fl) - 1]
+    #for item in fl:
+      #print item
+    #time.sleep(5)
+except KeyboardInterrupt:
+   s.close()
+   myfile.close()
+   print "readDSP_for_ModeS is signing off"
+
