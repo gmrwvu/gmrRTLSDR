@@ -1,3 +1,9 @@
+"""
+4_gmrCosine_by30 is the detection progrtam
+Current status: in progress
+working with just an ICAO in a text file to develop and verify the detction algorithmk
+"""
+
 #Get libraries
 import math
 import re
