@@ -75,3 +75,4 @@ select msg from adsb where ICAO = 'C015B0';
 10 messages in common
 C00EC2 has 340 messages so messages shared are 3%
 C015B0 has 800 messages so messages shared are 1.3%
+This is reasonable
