@@ -2,7 +2,7 @@ To verify the cosine score between two ICAOs
 this sql script gets the two ICAO message sets
 as two independetn queries and then does the sql
 set operation of intersection to find how many
-message duplicates they share in common
+message duplicates they share in common.
 % and cosine score have a direct correlation
 so we can use this as a reasonableness check
 
