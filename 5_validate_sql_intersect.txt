@@ -1,0 +1,77 @@
+To verify the cosine assignment between two ICAOs
+this sql script gets the two ICAO message sets
+as two independetn queries and then does the sql
+set operation of intersection to find how many
+message duplicates they share in common
+% and cosine score have a direct correlation
+so we can use this as a reasonableness check
+
+pair 1
+0D0733	 A7CB67	0.00317957
+
+pair 2
+A02C94	 A34AE0	0.057142922
+
+pair 3
+C00EC2	 C015B0	0.030551055
+
+pair 1
+select msg from adsb where ICAO = '0D0733'
+intersect
+select msg from adsb where ICAO = 'A7CB67';
+990D8393C8089D
+990D8493C0089D
+
+2 messages in common both having same value
+0D0733 has 824 so messages shared are .2%
+A7CB67 has 1008 so messages shared are .2%
+This reasonable
+
+pair 2
+select msg from adsb where ICAO = 'A02C94'
+intersect
+select msg from adsb where ICAO = 'A34AE0'
+990CF7A6580493
+990CF7A6580893
+990CF7A6700493
+990CF7A6700893
+990CF7A6780493
+990CF8A6580893
+990CF9A6B00492
+990CFBA6D00494
+990CFBA6D80494
+990CFCA6D00494
+990CFCA6D80494
+990CFDA6F80894
+990CFDA7180894
+990D04A7B80494
+990D04A7D00494
+990D05A8100494
+990D05A8100894
+990D1EA0F00492
+990D289F580492
+
+19 messages in common, some duplicates 
+A34AE0 has 624 so messages shared are 3%
+A02C94 has 355 so messages shared are 5%
+This is reasonable
+
+pair 3
+C00EC2	 C015B0
+select msg from adsb where ICAO = 'C00EC2'
+intersect
+select msg from adsb where ICAO = 'C015B0';
+58BF024333FF10
+990C1C33300496
+990C1C33380496
+990C1C33500496
+990C1C33D80495
+990C1D33300496
+990C1D33300896
+990C1D33380496
+990C1D33500496
+990C1D33D80495
+
+10 messages in common
+C00EC2 has 340 messages so messages shared are 3%
+C015B0 has 800 messages so messages shared are 1.3%
