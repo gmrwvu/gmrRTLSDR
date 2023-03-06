@@ -1,4 +1,4 @@
-To verify the cosine assignment between two ICAOs
+To verify the cosine score between two ICAOs
 this sql script gets the two ICAO message sets
 as two independetn queries and then does the sql
 set operation of intersection to find how many
